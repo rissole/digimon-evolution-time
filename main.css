@@ -1,0 +1,13 @@
+#timeForm > div {
+    margin-bottom: 10px;
+}
+
+.timeSection {
+    display: flex;
+    justify-content: space-between;
+}
+
+body {
+    font-size: 1.2em;
+    max-width: 800px;
+}

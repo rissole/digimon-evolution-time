@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Digimon evolution time</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="apple-touch-icon" href="icon.png">
+
+  <link rel="stylesheet" href="main.css">
+</head>
+
+<body>
+    <form id="timeForm">
+        <div class="timeSection">
+            <label for="birthTime">Birth time: </label>
+            <input type="time" id="birthTime">
+        </div>
+        <div>
+            <small>Check sleep times at <a href="https://humulos.com/digimon/dm20/">https://humulos.com/digimon/dm20/</a></small>
+        </div>
+        <div class="timeSection">
+            <label for="sleepTime-intraining">Sleep time - In Training: </label>
+            <select id="sleepTime-intraining" disabled>
+                <option value="21" selected>21:00</option>
+            </select>
+        </div>
+        <div class="timeSection">
+            <label for="sleepTime-rookie">Sleep time - Rookie: </label>
+            <select id="sleepTime-rookie">
+                <option value="21">21:00</option>
+                <option value="22">22:00</option>
+                <option value="23">23:00</option>
+                <option value="24">00:00</option>
+            </select>
+        </div>
+        <div class="timeSection">
+        <label for="sleepTime-champion">Sleep time - Champion: </label>
+            <select id="sleepTime-champion">
+                <option value="21">21:00</option>
+                <option value="22">22:00</option>
+                <option value="23">23:00</option>
+                <option value="24">00:00</option>
+            </select>
+        </div>
+        <div class="timeSection">
+            <label for="sleepTime-ultimate">Sleep time - Ultimate: </label>
+            <select id="sleepTime-ultimate">
+                <option value="21">21:00</option>
+                <option value="22">22:00</option>
+                <option value="23">23:00</option>
+                <option value="24">00:00</option>
+            </select>
+        </div>
+    </form>
+    <hr/>
+    <div>
+        <ul id="output">
+            
+        </ul>
+    </div>
+    
+  <script src="main.js"></script>
+</body>
+
+</html>
