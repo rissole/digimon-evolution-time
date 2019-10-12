@@ -15,8 +15,21 @@
 <body>
     <form id="timeForm">
         <div class="timeSection">
-            <label for="birthTime">Birth time: </label>
+            <label for="birthTime">Starting time: </label>
             <input type="time" id="birthTime">
+        </div>
+        <div class="timeSection">
+            <label for="birthDate">(Optional) Starting date: </label>
+            <input type="date" id="birthDate">
+        </div>
+        <div class="timeSection">
+            <label for="startingStage">(Optional) Starting stage: </label>
+            <select id="startingStage">
+                <option selected value>Default (Baby)</option>
+                <option value="1">Rookie</option>
+                <option value="2">Champion</option>
+                <option value="3">Ultimate</option>
+            </select>
         </div>
         <div>
             <small>Check sleep times at <a href="https://humulos.com/digimon/dm20/">https://humulos.com/digimon/dm20/</a></small>

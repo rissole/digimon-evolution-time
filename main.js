@@ -1,5 +1,7 @@
 var timeForm = document.getElementById('timeForm');
 var birthTimeInput = document.getElementById('birthTime');
+var birthDateInput = document.getElementById('birthDate');
+var startingStageInput = document.getElementById('startingStage');
 
 var LEVEL_INTRAINING = 'intraining';
 var LEVEL_ROOKIE = 'rookie';
@@ -22,13 +24,15 @@ var HOURS_CONSTANT = 60 * 60 * 1000;
 // hook it up
 
 birthTimeInput.addEventListener('change', formChanged);
+birthDateInput.addEventListener('change', formChanged);
+startingStageInput.addEventListener('change', formChanged);
 for (var i = 0; i < LEVELS.length - 1; ++i) {
     document.getElementById('sleepTime-'+LEVELS[i]).addEventListener('change', formChanged);
 }
 
 function formChanged(event) {
     if (getBirthTime() != null) {
-        var evoTimes = calculateEvolutionTimes(getBirthTime(), getSleepTimes());
+        var evoTimes = calculateEvolutionTimes(getBirthTime(), getSleepTimes(), getStartingStageIndex());
         renderOutput(evoTimes);
     }
     event.preventDefault();
@@ -37,7 +41,12 @@ function formChanged(event) {
 // big brain logic time
 
 function getBirthTime() {
-    return new Date((new Date()).setHours(document.getElementById('birthTime').value.split(':')[0], document.getElementById('birthTime').value.split(':')[1]));
+    if (!document.getElementById('birthTime').value) {
+        return null;
+    }
+    var baseDate = birthDateInput.valueAsDate;
+    baseDate = baseDate || new Date();
+    return new Date(new Date(baseDate).setHours(document.getElementById('birthTime').value.split(':')[0], document.getElementById('birthTime').value.split(':')[1]));
 }
 
 function getSleepTimes() {
@@ -48,13 +57,17 @@ function getSleepTimes() {
     return output;
 }
 
-function calculateEvolutionTimes(birthDate, sleepTimes) {
+function getStartingStageIndex() {
+    return startingStageInput.value ? Number(startingStageInput.value) : 0;
+}
+
+function calculateEvolutionTimes(birthDate, sleepTimes, startingStageIndex) {
     var birthTime = getBirthTime();
     var evolutionTimes = {
-        [LEVEL_INTRAINING]: new Date(birthTime.getTime() + 10 * (HOURS_CONSTANT / 60))
+        [LEVELS[startingStageIndex]]: new Date(birthTime.getTime() + (startingStageIndex === 0 ? 10 * (HOURS_CONSTANT / 60) : 0))
     };
 
-    for (var i = 1; i < LEVELS.length; ++i) {
+    for (var i = startingStageIndex + 1; i < LEVELS.length; ++i) {
         var sleepHour = sleepTimes[LEVELS[i - 1]];
         var activeHoursLeft = EVOLUTION_DURATIONS[LEVELS[i]];
         var lastEvoTime = evolutionTimes[LEVELS[i - 1]].getTime();
@@ -88,11 +101,8 @@ function renderOutput(evoTimes) {
     }
     
     function _formatdate(d, levelForLink) {
-        var str = ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
-        var days = Math.floor((d.getTime() - (new Date()).getTime()) / (1000 * 60 * 60 * 24));
-        if (days > 0) {
-            str = '+' + days + ' days at ' + str;
-        }
+        var monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        var str = d.getDate() + ' ' + monthNames[d.getMonth()] + ' ' + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
         if (!levelForLink) {
             return str;
         }
@@ -100,12 +110,22 @@ function renderOutput(evoTimes) {
         return '<a href="http://www.google.com/calendar/render?action=TEMPLATE&text=Evolve ('+levelForLink+')&dates='+d.toISOString().replace(/-|:|\.\d\d\d/g,"")+'/'+d2.toISOString().replace(/-|:|\.\d\d\d/g,"")+'&details=Your digimon will evolve&trp=false&sprop=&sprop=name:"target="_blank" rel="nofollow">'+str+'</a>';
     }
     
+    function title(s) {
+        return s.charAt(0).toUpperCase() + s.substr(1);
+    }
+    
     var outputList = document.getElementById('output');
     outputList.innerHTML = '';
-    outputList.appendChild(_createli('Born at: ' + _formatdate(getBirthTime())));
-    outputList.appendChild(_createli('Baby to In-training: (10 min), ' + _formatdate(evoTimes[LEVEL_INTRAINING])));
-    outputList.appendChild(_createli('In-training to Rookie: (6h), ' + _formatdate(evoTimes[LEVEL_ROOKIE])));
-    outputList.appendChild(_createli('Rookie to Champion: (24h), ' + _formatdate(evoTimes[LEVEL_CHAMPION], LEVEL_CHAMPION)));
-    outputList.appendChild(_createli('Champion to Ultimate: (36h), ' + _formatdate(evoTimes[LEVEL_ULTIMATE], LEVEL_ULTIMATE)));
-    outputList.appendChild(_createli('Ultimate to Mega: (48h), ' + _formatdate(evoTimes[LEVEL_MEGA], LEVEL_MEGA)));
+    var startingStageIndex = getStartingStageIndex();
+    if (startingStageIndex === 0) {
+        outputList.appendChild(_createli('Born at: ' + _formatdate(getBirthTime())));
+        outputList.appendChild(_createli('to In-training: (10 min), ' + _formatdate(evoTimes[LEVEL_INTRAINING])));
+        outputList.appendChild(_createli('to Rookie: (6h), ' + _formatdate(evoTimes[LEVEL_ROOKIE], LEVEL_ROOKIE)));
+        startingStageIndex = 1;
+    } else {
+        outputList.appendChild(_createli('Reached ' + title(LEVELS[startingStageIndex]) + ' at: ' + _formatdate(getBirthTime())));
+    }
+    for (var i = startingStageIndex + 1; i < LEVELS.length; ++i) {
+        outputList.appendChild(_createli('to ' + title(LEVELS[i]) + ': (' + EVOLUTION_DURATIONS[LEVELS[i]] + 'h), ' + _formatdate(evoTimes[LEVELS[i]], LEVELS[i])));
+    }
 }
